@@ -1,0 +1,24 @@
+name: library-project
+
+services:
+  db:
+    image: postgres:15
+    container_name: library_db
+    environment:
+      POSTGRES_DB: library
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog_server
+    ports:
+      - "1025:1025" # Порт для SMTP (відправка листів з Django)
+      - "8025:8025" # Порт для веб-інтерфейсу (щоб ти міг переглядати листи у браузері)
+
+volumes:
+  postgres_data:
