@@ -7,9 +7,9 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # Авторизація та оновлення токенів
     path('api/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    # Підключаємо реєстрацію та профіль з додатка users
     path('api/', include('users.urls')),
+    path('api/library/', include('library.urls')), 
+    path('i18n/', include('django.conf.urls.i18n')),
 ]
