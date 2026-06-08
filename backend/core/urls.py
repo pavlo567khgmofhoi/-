@@ -7,9 +7,13 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    # 🔐 Ендпоінти аутентифікації
+    path('api/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    # 📚 Підключаємо маршрути бібліотеки та користувачів
+    # Зверни увагу: тут вже є 'api/', тому в library.urls має бути просто 'books/'
+    path('api/', include('library.urls')), 
     path('api/', include('users.urls')),
-    path('api/library/', include('library.urls')), 
-    path('i18n/', include('django.conf.urls.i18n')),
 ]

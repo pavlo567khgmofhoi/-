@@ -1,27 +1,22 @@
-from django.contrib.auth.models import User
 from rest_framework import serializers
+from django.contrib.auth.models import User
 
-# Серіалізатор для виведення даних профілю
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff']
+        read_only_fields = ['id', 'username', 'email', 'is_staff']
 
-# Серіалізатор для реєстрації нового користувача
-class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+# --- Серіалізатор для безпечної зміни пароля ---
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True, write_only=True)
+    new_password = serializers.CharField(required=True, write_only=True)
+
+    def validate_new_password(self, value):
+        return value
+
+class ResetPasswordEmailRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField(min_length=2)
 
     class Meta:
-        model = User
-        fields = ['username', 'email', 'password', 'first_name', 'last_name']
-
-    def create(self, validated_data):
-        # Метод create_user автоматично хешує (шифрує) пароль у базі даних
-        user = User.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data.get('email', ''),
-            password=validated_data['password'],
-            first_name=validated_data.get('first_name', ''),
-            last_name=validated_data.get('last_name', '')
-        )
-        return user
+        fields = ['email']

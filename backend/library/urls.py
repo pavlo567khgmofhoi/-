@@ -3,7 +3,8 @@ from .views import (
     AuthorListCreateView, AuthorDetailView,
     CategoryListCreateView, CategoryDetailView,
     BookListCreateView, BookDetailView,
-    ScrapeBooksView, ExportBookExcelView # Наші нові в'юшки
+    ScrapeBooksView, ExportBookExcelView,
+    UserProfileView, ChangePasswordView  # Нові в'юшки профілю
 )
 
 urlpatterns = [
@@ -11,7 +12,7 @@ urlpatterns = [
     path('authors/', AuthorListCreateView.as_view(), name='author-list'),
     path('authors/<int:pk>/', AuthorDetailView.as_view(), name='author-detail'),
     
-    # Категорії
+    # Категорії (Жанри)
     path('categories/', CategoryListCreateView.as_view(), name='category-list'),
     path('categories/<int:pk>/', CategoryDetailView.as_view(), name='category-detail'),
     
@@ -22,4 +23,8 @@ urlpatterns = [
     # Робочі ендпоінти для ТЗ (Частина 3)
     path('books/scrape/', ScrapeBooksView.as_view(), name='book-scrape'),
     path('books/export/', ExportBookExcelView.as_view(), name='book-export'),
+    
+    # Користувач та безпека (Частина 1)
+    path('auth/profile/', UserProfileView.as_view(), name='user-profile'),
+    path('auth/change-password/', ChangePasswordView.as_view(), name='change-password'),
 ]

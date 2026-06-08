@@ -12,14 +12,11 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class BookSerializer(serializers.ModelSerializer):
-    # Додаємо красиве відображення автора та категорії
-    author_details = AuthorSerializer(source='author', read_only=True)
-    category_details = CategorySerializer(source='category', read_only=True)
+    # Тепер назва поля збігається з назвою у моделі, 
+    # тому React зможе легко достукатися до book.category.name
+    category = CategorySerializer(read_only=True)
+    author = AuthorSerializer(read_only=True)
 
     class Meta:
         model = Book
-        fields = [
-            'id', 'title', 'author', 'category', 
-            'author_details', 'category_details', 
-            'description', 'publication_date', 'isbn'
-        ]
+        fields = ['id', 'title', 'author', 'category', 'description', 'publication_date', 'isbn']
