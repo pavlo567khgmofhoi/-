@@ -96,13 +96,6 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',  # Підключено автоматичну генерацію схем API
 }
 
-# --- НАЛАШТУВАННЯ ПОШТИ (MAILHOG) ---
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = '127.0.0.1'
-EMAIL_PORT = 1026
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = False
-
 # --- НАЛАШТУВАННЯ CORS ---
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
@@ -115,3 +108,11 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
+
+# --- НАЛАШТУВАННЯ ПОШТИ (MAILHOG ДЛЯ ЛОКАЛЬНОГО ТЕСТУВАННЯ) ---
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025  
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
+DEFAULT_FROM_EMAIL = 'admin@digitallibrary.com'

@@ -1,66 +1,108 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useRegisterMutation } from '../app/api/apiSlice';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Register() {
-  const [formData, setFormData] = useState({ username: '', password: '', email: '' });
-  const [register, { isLoading }] = useRegisterMutation();
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+    setMessage('');
+    
     try {
-      await register(formData).unwrap();
-      alert('Реєстрація успішна! Тепер ти можеш увійти.');
-      navigate('/login');
-    } catch (err) {
-      alert('Помилка реєстрації. Перевір дані або такий користувач вже існує.');
+      // Відправляємо дані на наш Django бекенд
+      const response = await fetch('http://localhost:8000/api/auth/register/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setIsError(false);
+        setMessage('Успішна реєстрація! Перенаправляємо на сторінку входу...');
+        // Чекаємо 2 секунди, щоб користувач побачив повідомлення, і кидаємо на логін
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      } else {
+        setIsError(true);
+        // Виводимо помилку від бекенду (наприклад, "Користувач вже існує")
+        setMessage(data.detail || 'Помилка реєстрації. Перевірте введені дані.');
+      }
+    } catch (error) {
+      setIsError(true);
+      setMessage('Помилка з\'єднання з сервером. Переконайтеся, що бекенд працює.');
     }
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-6">
-      <div className="bg-gray-900 border border-gray-800 p-10 rounded-3xl w-full max-w-md shadow-2xl">
-        <h1 className="text-3xl font-black text-white mb-2 text-center">Створити акаунт</h1>
-        <p className="text-gray-500 text-center mb-8">Приєднуйся до нашої бібліотеки</p>
+    <div className="container">
+      <div className="login-section">
         
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <input 
-              type="text" name="username" placeholder="Ім'я користувача" required
-              onChange={handleChange}
-              className="w-full p-4 rounded-xl bg-gray-950 border border-gray-800 text-white focus:border-blue-500 outline-none"
-            />
-          </div>
-          <div>
-            <input 
-              type="email" name="email" placeholder="Email" required
-              onChange={handleChange}
-              className="w-full p-4 rounded-xl bg-gray-950 border border-gray-800 text-white focus:border-blue-500 outline-none"
-            />
-          </div>
-          <div>
-            <input 
-              type="password" name="password" placeholder="Пароль" required
-              onChange={handleChange}
-              className="w-full p-4 rounded-xl bg-gray-950 border border-gray-800 text-white focus:border-blue-500 outline-none"
-            />
-          </div>
-          <button 
-            type="submit" disabled={isLoading}
-            className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition"
-          >
-            {isLoading ? 'Реєструємо...' : 'Зареєструватися'}
-          </button>
-        </form>
+        <div className="login-card">
+          <div className="form-title">Реєстрація</div>
+          <div className="form-subtitle">Створіть акаунт для доступу до бібліотеки</div>
 
-        <p className="text-gray-500 text-center mt-6 text-sm">
-          Вже є акаунт? <button onClick={() => navigate('/login')} className="text-blue-500 font-bold hover:underline">Увійти</button>
-        </p>
+          {/* Блок для виводу повідомлень про успіх або помилку */}
+          {message && (
+            <div className={isError ? "error-msg" : "success-msg"}>
+              {message}
+            </div>
+          )}
+
+          <form onSubmit={handleRegister}>
+            <div className="form-group">
+              <label className="form-label">Ім'я користувача</label>
+              <input 
+                className="form-input" 
+                type="text" 
+                placeholder="Введіть логін"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Email</label>
+              <input 
+                className="form-input" 
+                type="email" 
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Пароль</label>
+              <input 
+                className="form-input" 
+                type="password" 
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <button type="submit" className="form-btn">Зареєструватися →</button>
+          </form>
+
+          <div className="form-link">
+            Вже маєте акаунт? <Link to="/login">Увійти</Link>
+          </div>
+        </div>
+
       </div>
     </div>
   );
